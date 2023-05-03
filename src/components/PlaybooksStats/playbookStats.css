@@ -1,0 +1,67 @@
+.bullet-container {
+  margin: 10px;
+  height: 300px;
+  background-color: #3a3a3a;
+  width: 50%;
+  display: flex;
+  /* align-items: center; */
+  flex-direction: column;
+
+  border: 1px solid hsl(0, 1%, 30%);
+  /* justify-content:space-between; */
+}
+
+.bullet-container h2 {
+  color: #f77c08;
+  font-size: 14px;
+  text-align: center;
+}
+.test {
+  display: flex;
+  align-items: center;
+}
+.chart-wrapper {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chart-legend {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  width: 100%;
+  margin-top: -70px;
+  justify-content: center;
+}
+
+.chart-legend p {
+  color: white;
+  width: 190px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  justify-content: center;
+  /* justify-content: space-between; */
+}
+
+.chart-legend p:hover {
+  color: #f77c08;
+}
+.chart-legend p span {
+  margin: 0;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+}
+
+/* .chart-legend p span::before {
+  content: ".";
+  color: white;
+  margin-bottom: 10px;
+  font-size: 3em;
+  margin-right: 5px;
+  text-align: center;
+  display: inline-block;
+} */
