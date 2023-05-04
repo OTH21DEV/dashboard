@@ -1,6 +1,6 @@
 .bullet-container {
   margin: 10px;
-  height: 300px;
+  height: 249px;
   background-color: #3a3a3a;
   width: 50%;
   display: flex;
@@ -8,7 +8,7 @@
   flex-direction: column;
 
   border: 1px solid hsl(0, 1%, 30%);
-  /* justify-content:space-between; */
+  /* justify-content:space-between;249 */
 }
 
 .bullet-container h2 {
@@ -32,7 +32,8 @@
   align-items: center;
   width: 100%;
   margin-top: -70px;
-  justify-content: center;
+  justify-content: space-evenly;
+  z-index:1;
 }
 
 .chart-legend p {
