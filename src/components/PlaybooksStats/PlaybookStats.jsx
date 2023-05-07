@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { ResponsiveRadialBar } from "@nivo/radial-bar";
 
 import "./playbookStats.css";
@@ -13,9 +13,9 @@ axios.defaults.headers = {
 };
 
 const PlaybookStats = ({ title, data, maxValue, counter, legend }) => {
-  console.log(counter);
-  const dotToday = <FontAwesomeIcon icon={faCircle} color={"#e8c1a0"} fontSize={"10px"} />;
-  const dotTotal = <FontAwesomeIcon icon={faCircle} color={"#f47560"} fontSize={"10px"} />;
+
+  const dotToday = <FontAwesomeIcon icon={faCircle} color={"#e8c1a0"} fontSize={"6px"} />;
+  const dotTotal = <FontAwesomeIcon icon={faCircle} color={"#f47560"} fontSize={"6px"} />;
 
   const theme = {
     // background: "#222222",
@@ -106,9 +106,10 @@ const PlaybookStats = ({ title, data, maxValue, counter, legend }) => {
           maxValue={maxValue}
           startAngle={-90}
           endAngle={90}
+          cornerRadius={35}
           // endAngle={275}
-          innerRadius={0.25}
-          padding={0.4}
+          innerRadius={0.45}
+          padding={0.65}
           padAngle={0}
           margin={{ top: 40 }}
           // margin={{ top: 40, right: 120, bottom: 40, left: 40 }}
@@ -185,15 +186,16 @@ const PlaybookStats = ({ title, data, maxValue, counter, legend }) => {
         />
         <div className="chart-legend">
           <p>
-            {dotTotal}
+            {counter? dotTotal:''}
             {"\u00A0"}
             <span>{counter ? counter.first : ""}</span> {"\u00A0"} {legend ? legend.first : ""}{" "}
           </p>
           <p>
-            {dotToday}
+            {counter? dotToday:''}
             {"\u00A0"} <span>{counter ? counter.second : ""}</span>
             {"\u00A0"} {legend ? legend.second : ""}
           </p>
+      
         </div>
       </div>
     </div>

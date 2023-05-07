@@ -1,111 +1,218 @@
 import React, { useState, useEffect } from "react";
 import Header from "./components/Header/Header";
 import PlaybookStats from "./components/PlaybooksStats/PlaybookStats";
-import './app.css'
+import "./app.css";
 import axios from "axios";
+import GetData from "./services/services";
+import { GetOpensearchData } from "./services/services";
+import { convertToGib } from "./utils/convertToGib";
+
 axios.defaults.headers = {
   statuskey: "sebuxor",
 };
 
-let executionLegend={
-  first:'total executions',
-  second:"today's executions"
-}
-let workerLegend={
-  first:'worker count',
-  second:"consumer count"
-}
+let executionLegend = {
+  first: "total executions",
+  second: "today's executions",
+};
+let workerLegend = {
+  first: "worker count",
+  second: "consumer count",
+};
+let brokerLegend = {
+  first: "broker connections",
+};
+let memoryLegend = {
+  first: "GiB memory consumption",
+};
+
+let opensearchLegend = {
+  first: "opensearch shards",
+};
+
+let activeShardsLegend = {
+  first: "% active shards",
+};
+
 function App() {
   const [playbooksExecutions, setPlaybooksExecutions] = useState([]);
   const [worker, setWorker] = useState([]);
-  const url = "https://purplecore.xyz/api/v1/management/playbooks/activity/stats";
+  const [brokerConnection, setBrokerConnection] = useState([]);
+  const [memoryConsumption, setMemoryConsumption] = useState([]);
 
-  const getStats = async () => {
-    const result = await axios.get(url);
-    console.log(result);
+  const [opensearchShards, setOpensearchShards] = useState([]);
+  const [activeShards, setActiveShards] = useState([]);
 
+  async function testT() {
+    //    const data =
+    // const data = await fetch('http://51.222.159.234:9200/_cluster/health')
+    await fetch("http://51.222.159.234:9200/_cluster/health")
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        // console.log(data);
 
-    let counterExecution ={
-      first:result.data.data.executionsTotal,
-      second:result.data.data.executionsToday,
-    };
+        let counterOpensearchShards = {
+          first: data.active_shards,
+        };
 
-
-    let counterWorker={
-      first: result.data.data.workerCount,
-      second:result.data.data.publicServers[0].consumerCount
-      // second: result.data.data.workerCount,
-    }
-    localStorage.setItem("counterExecution", JSON.stringify(counterExecution));
-    localStorage.setItem("counterWorker", JSON.stringify(counterWorker));
-
-
-    localStorage.setItem("maxExecutionLimit", result.data.data.maxExecutionLimit);
-
-    setPlaybooksExecutions([
-      {
-        id: "Todays executions",
-        data: [
+        let counterActiveShards = {
+          first: data.active_shards_percent_as_number,
+        };
+        localStorage.setItem("counterOpensearchShards", JSON.stringify(counterOpensearchShards));
+        localStorage.setItem("counterActiveShards", JSON.stringify(counterActiveShards));
+        setOpensearchShards([
           {
-            x: "Today executions",
+            id: "Opensearch Shards",
+            data: [
+              {
+                x: "Opensearch Shards",
 
-            y: result.data.data.executionsToday,
+                y: data.active_shards,
+              },
+            ],
           },
-        ],
-      },
-
-      {
-        id: "Total executions",
-        data: [
+        ]);
+        setActiveShards([
           {
-            x: "Total executions",
-            y: result.data.data.executionsTotal,
-          },
-        ],
-      },
-    ]);
+            id: "Opensearch Shards",
+            data: [
+              {
+                x: "Opensearch Shards",
 
-    setWorker([
-      {
-        id: "Worker Count",
-        data: [
-          {
-            x: "Worker Count",
-
-            y: result.data.data.workerCount,
+                y: data.active_shards_percent_as_number,
+              },
+            ],
           },
-        ],
-      },
-
-      {
-        id: "Consumer Count",
-        data: [
-          {
-            x: "Consumer Count",
-            y: result.data.data.publicServers[0].consumerCount,
-          },
-        ],
-      },
-    ]);
-  };
+        ]);
+      });
+    // setTest( data)
+  }
 
   useEffect(() => {
-    getStats();
+    // testT();
+
+    const getPlaybooksData = new GetData();
+    getPlaybooksData.getData().then(async () => {
+      console.log(getPlaybooksData);
+
+      setPlaybooksExecutions([
+        {
+          id: "Todays executions",
+          data: [
+            {
+              x: "Today executions",
+
+              y: getPlaybooksData.playbooksData.executionsToday,
+            },
+          ],
+        },
+
+        {
+          id: "Total executions",
+          data: [
+            {
+              x: "Total executions",
+              y: getPlaybooksData.playbooksData.executionsTotal,
+            },
+          ],
+        },
+      ]);
+
+      setWorker([
+        {
+          id: "Worker Count",
+          data: [
+            {
+              x: "Worker Count",
+
+              y: getPlaybooksData.playbooksData.workerCount,
+            },
+          ],
+        },
+
+        {
+          id: "Consumer Count",
+          data: [
+            {
+              x: "Consumer Count",
+              y: getPlaybooksData.playbooksData.publicServers[0].consumerCount,
+            },
+          ],
+        },
+      ]);
+
+      setBrokerConnection([
+        {
+          id: "Broker Connections",
+          data: [
+            {
+              x: "Broker Connections",
+
+              y: getPlaybooksData.playbooksData.brokerConnectionCount,
+            },
+          ],
+        },
+      ]);
+
+      setMemoryConsumption([
+        {
+          id: "Threatconnect Memory Consumption",
+          data: [
+            {
+              x: "Threatconnect Memory Consumption",
+
+              y: convertToGib(getPlaybooksData.jvmStatsData.heapMemoryUsed),
+            },
+          ],
+        },
+      ]);
+
+      
+
+    });
+
+    // const getOpensearchData = new GetOpensearchData();
+    // getOpensearchData.getData().then(async () => {
+    //   console.log(getOpensearchData);
+    // })
+
+    // empty dependency array means this effect will only run once (like componentDidMount in classes)
   }, []);
-
-
-
-
 
   return (
     <div className="App">
       <Header></Header>
       <section className="radial-charts">
-      <PlaybookStats legend={executionLegend}counter={JSON.parse(localStorage.getItem('counterExecution'))}maxValue={localStorage.getItem("maxExecutionLimit")} data={playbooksExecutions} title="Playbooks Activity Stats"></PlaybookStats>
-      <PlaybookStats  legend={workerLegend}counter={JSON.parse(localStorage.getItem('counterWorker'))}maxValue={150} data={worker} title="Threatconnect Engine Metrics"></PlaybookStats>
+        <PlaybookStats
+          legend={executionLegend}
+          counter={JSON.parse(localStorage.getItem("counterExecution"))}
+          maxValue={localStorage.getItem("maxExecutionLimit")}
+          data={playbooksExecutions}
+          title="Playbooks Activity Stats"
+        ></PlaybookStats>
+        <PlaybookStats legend={workerLegend} counter={JSON.parse(localStorage.getItem("counterWorker"))} maxValue={150} data={worker} title="Engine Metrics"></PlaybookStats>
+        <PlaybookStats legend={brokerLegend} counter={JSON.parse(localStorage.getItem("counterBroker"))} maxValue={250} data={brokerConnection} title="Broker Connections"></PlaybookStats>
+        <PlaybookStats
+          legend={memoryLegend}
+          counter={JSON.parse(localStorage.getItem("counterMemoryConsumption"))}
+          maxValue={convertToGib(8000000000)}
+          data={memoryConsumption}
+          title="Memory Consumption"
+        ></PlaybookStats>
+        {/* <PlaybookStats legend={opensearchLegend} counter={JSON.parse(localStorage.getItem("counterOpensearchShards"))} maxValue={50} data={opensearchShards} title="Opensearch Shards"></PlaybookStats>
+
+        <PlaybookStats
+          legend={activeShardsLegend}
+          counter={JSON.parse(localStorage.getItem("counterActiveShards"))}
+          maxValue={100}
+          data={activeShards}
+          title="Active Shards Percentage"
+        ></PlaybookStats> */}
       </section>
     </div>
   );
 }
 
-export default App;
+export default App
