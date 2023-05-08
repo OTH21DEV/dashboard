@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header/Header";
 import PlaybookStats from "./components/PlaybooksStats/PlaybookStats";
 import "./app.css";
-import axios from "axios";
+
 import GetData from "./services/services";
-import { GetOpensearchData } from "./services/services";
+
 import { convertToGib } from "./utils/convertToGib";
 
-axios.defaults.headers = {
-  statuskey: "sebuxor",
-};
+
 
 let executionLegend = {
   first: "total executions",
@@ -43,59 +41,16 @@ function App() {
   const [opensearchShards, setOpensearchShards] = useState([]);
   const [activeShards, setActiveShards] = useState([]);
 
-  async function testT() {
-    //    const data =
-    // const data = await fetch('http://51.222.159.234:9200/_cluster/health')
-    await fetch("http://51.222.159.234:9200/_cluster/health")
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        // console.log(data);
-
-        let counterOpensearchShards = {
-          first: data.active_shards,
-        };
-
-        let counterActiveShards = {
-          first: data.active_shards_percent_as_number,
-        };
-        localStorage.setItem("counterOpensearchShards", JSON.stringify(counterOpensearchShards));
-        localStorage.setItem("counterActiveShards", JSON.stringify(counterActiveShards));
-        setOpensearchShards([
-          {
-            id: "Opensearch Shards",
-            data: [
-              {
-                x: "Opensearch Shards",
-
-                y: data.active_shards,
-              },
-            ],
-          },
-        ]);
-        setActiveShards([
-          {
-            id: "Opensearch Shards",
-            data: [
-              {
-                x: "Opensearch Shards",
-
-                y: data.active_shards_percent_as_number,
-              },
-            ],
-          },
-        ]);
-      });
-    // setTest( data)
-  }
+ 
 
   useEffect(() => {
-    // testT();
+    
 
     const getPlaybooksData = new GetData();
     getPlaybooksData.getData().then(async () => {
-      console.log(getPlaybooksData);
+      console.log(getPlaybooksData.openssearchShardsStatsData.active_primary_shards
+
+        );
 
       setPlaybooksExecutions([
         {
@@ -169,14 +124,33 @@ function App() {
         },
       ]);
 
-      
+      setOpensearchShards([
+        {
+          id: "Opensearch Shards",
+          data: [
+            {
+              x: "Opensearch Shards",
 
+              y: getPlaybooksData.openssearchShardsStatsData.active_primary_shards,
+            },
+          ],
+        },
+      ]);
+      setActiveShards([
+        {
+          id: "Opensearch Shards",
+          data: [
+            {
+              x: "Opensearch Shards",
+
+              y: getPlaybooksData.openssearchShardsStatsData.active_shards_percent_as_number,
+            },
+          ],
+        },
+      ]);
     });
 
-    // const getOpensearchData = new GetOpensearchData();
-    // getOpensearchData.getData().then(async () => {
-    //   console.log(getOpensearchData);
-    // })
+   
 
     // empty dependency array means this effect will only run once (like componentDidMount in classes)
   }, []);
@@ -201,15 +175,15 @@ function App() {
           data={memoryConsumption}
           title="Memory Consumption"
         ></PlaybookStats>
-        {/* <PlaybookStats legend={opensearchLegend} counter={JSON.parse(localStorage.getItem("counterOpensearchShards"))} maxValue={50} data={opensearchShards} title="Opensearch Shards"></PlaybookStats>
+        <PlaybookStats legend={opensearchLegend} counter={JSON.parse(localStorage.getItem("counterOpensearchShards"))} maxValue={50} data={opensearchShards} title="Opensearch Shards"></PlaybookStats> 
 
-        <PlaybookStats
+       <PlaybookStats
           legend={activeShardsLegend}
           counter={JSON.parse(localStorage.getItem("counterActiveShards"))}
           maxValue={100}
           data={activeShards}
           title="Active Shards Percentage"
-        ></PlaybookStats> */}
+        ></PlaybookStats> 
       </section>
     </div>
   );
