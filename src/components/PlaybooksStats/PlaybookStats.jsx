@@ -185,17 +185,16 @@ const PlaybookStats = ({ title, data, maxValue, counter, legend }) => {
           // ]}
         />
         <div className="chart-legend">
-          <p>
-            {counter? dotTotal:''}
-            {"\u00A0"}
-            <span>{counter ? counter.first : ""}</span> {"\u00A0"} {legend ? legend.first : ""}{" "}
-          </p>
-          <p>
-            {counter? dotToday:''}
-            {"\u00A0"} <span>{counter ? counter.second : ""}</span>
-            {"\u00A0"} {legend ? legend.second : ""}
-          </p>
-      
+          {
+            counter.second? 
+            <div>
+            <p>{dotTotal}{"\u00A0"}<span>{counter.first}</span>{"\u00A0"}{legend.first}</p>
+            <p>{dotToday}{"\u00A0"}<span>{counter.second}</span>{"\u00A0"}{legend.second}</p>
+           </div>
+          :
+          <p>{dotToday}{"\u00A0"}<span>{counter.first}</span>{"\u00A0"}{legend.first}</p>
+          }
+         
         </div>
       </div>
     </div>
